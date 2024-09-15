@@ -11,7 +11,7 @@ const { signOut } = useAuthenticator()
         <h1>Hello from AWS Amplify</h1>
         <button onClick={() => signOut()}>Log Out</button>
       </header>
-    </div>
+    </div
     </>
   )
 }

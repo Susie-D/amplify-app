@@ -6,8 +6,7 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
-
-
+const axios = require('axios');
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -26,19 +25,35 @@ app.use(function (req, res, next) {
 });
 
 
-// coin based route
+// coin based route - creating an API
+// app.get('/coins', function (req, res) {
+//   const coins = [
+//     { name: 'Bitcoin', symbol: 'BTC', price_usd: "10000" },
+//     { name: 'Ethereum', symbol: 'ETH', price_usd: "400" },
+//     { name: 'Litecoin', symbol: 'LTC', price_usd: "150" },
+//   ]
+//   res.json({
+//     coins
+//   })
+// })
+
+
+// define base url - calling an API
 app.get('/coins', function (req, res) {
-  const coins = [
-    { name: 'Bitcoin', symbol: 'BTC', price_usd: "10000" },
-    { name: 'Ethereum', symbol: 'ETH', price_usd: "400" },
-    { name: 'Litecoin', symbol: 'LTC', price_usd: "150" },
-  ]
-  res.json({
-    coins
-  })
+  let apiUrl = `https://api.coinlore.com/api/tickers?start=0&limit=10`
+
+  // check is there are any query string parameters
+  // if so, reset the base url to include them
+  if (req.apiGateway && req.apiGateway.event.queryStringParameters) {
+    const { start = 0, limit = 10 } = req.apiGateway.event.queryStringParameters
+    apiUrl = `https://api.coinlore.com/api/tickers?start=${start}&limit=${limit}`
+  }
+  axios.get(apiUrl)
+    .then(response => {
+      res.json({ coins: response.data.data })
+    })
+    .catch(err => res.json({ error: err }))
 })
-
-
 /**********************
  * Example get method *
  **********************/
